@@ -77,3 +77,9 @@ Then simply open `index.html` in any modern browser (double-click it, or `file:/
 ## License
 
 MIT Licensed. Part of [CSS Gradient Generator Pro](https://github.com/kasapdev/css-gradient-generator-pro).
+
+---
+
+## Part of the kasapdev Tools Suite
+
+One of 45+ zero-dependency vanilla JS tools, all free and open source — [see the full list](https://github.com/kasapdev/kasapdev).

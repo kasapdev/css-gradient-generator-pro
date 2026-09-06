@@ -279,7 +279,15 @@
   function buildStopRow(stop) {
     var row = WUS.el('div', { class: 'stop-row', draggable: 'true', 'data-id': stop.id });
 
-    var handle = WUS.el('span', { class: 'stop-drag-handle', title: 'Drag to reorder' }, [iconGrip()]);
+    var handle = WUS.el('span', {
+      class: 'stop-drag-handle', tabindex: '0', role: 'button',
+      title: 'Drag to reorder, or use Arrow Up/Down',
+      'aria-label': 'Reorder stop. Press Arrow Up or Arrow Down to move it in the list.'
+    }, [iconGrip()]);
+    handle.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowUp') { e.preventDefault(); moveStop(stop.id, -1); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); moveStop(stop.id, 1); }
+    });
 
     var colorInput = WUS.el('input', { type: 'color', class: 'stop-color-input', value: stop.color, 'aria-label': 'Stop color picker' });
     var hexInput = WUS.el('input', { type: 'text', class: 'stop-hex-input mono', value: stop.color, maxlength: '7', spellcheck: 'false', autocomplete: 'off', 'aria-label': 'Stop color hex value' });
@@ -416,6 +424,22 @@
     state.stops.splice(toIdx, 0, item);
     renderStops();
     persist();
+  }
+
+  /* Keyboard-accessible equivalent of drag reordering: moves a stop by one
+     position in the list (dir -1 = up, +1 = down) and restores focus to its
+     drag handle so keyboard users can keep moving it without losing place. */
+  function moveStop(id, dir) {
+    var idx = state.stops.findIndex(function (s) { return s.id === id; });
+    if (idx < 0) return;
+    var newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= state.stops.length) return;
+    var item = state.stops.splice(idx, 1)[0];
+    state.stops.splice(newIdx, 0, item);
+    renderStops();
+    persist();
+    var handleEl = stopListEl.querySelector('.stop-row[data-id="' + id + '"] .stop-drag-handle');
+    if (handleEl) handleEl.focus();
   }
 
   /* =================================================================
